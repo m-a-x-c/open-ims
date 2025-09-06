@@ -1,7 +1,20 @@
+import 'dotenv/config';
+import { Server } from 'http';
+import mongoose from 'mongoose';
 import app from './app';
 
-const PORT = process.env.PORT || 8000;
+let server: Server;
 
-app.listen(PORT, () => {
-  console.log(`app is listening on port ${PORT}`);
-});
+async function main() {
+  try {
+    await mongoose.connect(process.env.DATABASE_URL as string);
+
+    server = app.listen(process.env.PORT, () => {
+      console.log(`app is listening on port ${process.env.PORT}`);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+main();
