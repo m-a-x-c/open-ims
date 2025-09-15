@@ -1,4 +1,5 @@
 import { ErrorRequestHandler } from 'express';
+import config from '../config';
 import CustomError from '../errors/customError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
@@ -7,7 +8,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     statusCode: 500,
     message: 'Internal Server Error!',
     errors: {},
-    stack: process.env.NODE_ENV === 'dev' ? err.stack : null
+    stack: config.nodeEnv === 'dev' ? err.stack : null
   };
 
   if (err instanceof CustomError) {
