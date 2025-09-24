@@ -17,6 +17,18 @@ class UserControllers {
       data: result
     });
   });
+
+  // login into your registered account
+  login = asyncHandler(async (req, res) => {
+    const result = await this.services.login(req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'User login successfully!',
+      data: result
+    });
+  });
 }
 
 const userControllers = new UserControllers();
