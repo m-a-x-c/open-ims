@@ -1,12 +1,17 @@
 import httpStatus from 'http-status';
 import CustomError from '../../errors/customError';
 import generateToken from '../../utils/generateToken';
+import { IUser } from './user.interface';
 import User from './user.model';
 import verifyPassword from '../../utils/verifyPassword';
 
 class UserServices {
   private model = User;
 
+  // get profile
+  async getSelf(userId: string) {
+    return this.model.findById(userId);
+  }
   // register new user
   async register(payload: any) {
     if (payload.password !== payload.confirmPassword) {
@@ -31,6 +36,11 @@ class UserServices {
     } else {
       throw new CustomError(httpStatus.BAD_REQUEST, 'WrongCredentials');
     }
+  }
+
+  // update user profile
+  async updateProfile(id: string, payload: Partial<IUser>) {
+    return this.model.findByIdAndUpdate(id, payload);
   }
 }
 
