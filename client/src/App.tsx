@@ -1,5 +1,6 @@
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes/routes';
 import { ConfigProvider } from 'antd';
-import { Button } from 'antd';
 
 const App = () => {
   return (
@@ -20,11 +21,7 @@ const App = () => {
         },
       }}
     >
-      <div style={{ padding: 32 }}>
-        <h1>Inventory Management System</h1>
-        <p>Theme configured ✓</p>
-        <Button type='primary'>Test button</Button>
-      </div>
+      <RouterProvider router={router} />
     </ConfigProvider>
   );
 };
