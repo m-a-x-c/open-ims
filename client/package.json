@@ -1,6 +1,6 @@
 {
   "name": "inventory-management-system-client",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Inventory management system client",
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.0",
     "@phosphor-icons/react": "^2.1.10",
     "@reduxjs/toolkit": "^2.1.0",
     "antd": "^5.13.2",
