@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import ProtectRoute from '../components/layout/ProtectRoute';
 import Sidebar from '../components/layout/Sidebar';
 import Dashboard from '../pages/Dashboard';
+import SellerManagementPage from '../pages/managements/SellerManagementPage';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 
@@ -22,6 +23,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectRoute>
             <Dashboard />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'sellers',
+        element: (
+          <ProtectRoute>
+            <SellerManagementPage />
           </ProtectRoute>
         ),
       },
