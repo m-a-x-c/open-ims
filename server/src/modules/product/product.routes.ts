@@ -8,6 +8,9 @@ const productRoute = Router();
 
 productRoute.use(verifyAuth);
 
+productRoute.get('/total', productControllers.getTotalProduct);
 productRoute.post('/', validateRequest(productValidator.createSchema), productControllers.create);
+productRoute.get('/', productControllers.readAll);
+productRoute.get('/:id', productControllers.readSingle);
 
 export default productRoute;
