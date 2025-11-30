@@ -122,6 +122,55 @@ class ProductServices extends BaseServices<any> {
     await this._isExists(id);
     return this.model.findOne({ user: new Types.ObjectId(userId), _id: id });
   }
+
+  /**
+   * Multiple delete
+   */
+  async bulkDelete(payload: string[]) {
+    const data = payload.map((item) => new Types.ObjectId(item));
+
+    return this.model.deleteMany({ _id: { $in: data } });
+  }
+
+  /**
+   * Create new product
+   */
+  async addToStock(id: string, payload: Pick<IProduct, 'seller' | 'stock'>, userId: string) {
+    const session = await mongoose.startSession();
+
+    try {
+      session.startTransaction();
+
+      const seller = await Seller.findById(payload.seller);
+      const product: any = await this.model.findByIdAndUpdate(id, { $inc: { stock: payload.stock } }, { session });
+
+      await Purchase.create(
+        [
+          {
+            user: userId,
+            seller: product.seller,
+            product: product._id,
+            sellerName: seller?.name,
+            productName: product.name,
+            quantity: Number(product.stock),
+            unitPrice: Number(product.price),
+            totalPrice: Number(product.stock) * Number(product.price)
+          }
+        ],
+        { session }
+      );
+
+      await session.commitTransaction();
+
+      return product;
+    } catch (error) {
+      console.log(error);
+      await session.abortTransaction();
+      throw new CustomError(400, 'Product create failed');
+    } finally {
+      await session.endSession();
+    }
+  }
 }
 
 const productServices = new ProductServices(Product, 'Product');

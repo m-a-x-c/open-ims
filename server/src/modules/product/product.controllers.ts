@@ -21,6 +21,20 @@ class ProductControllers {
   });
 
   /**
+   * Add product to stock
+   */
+  addStock = asyncHandler(async (req, res) => {
+    const result = await this.services.addToStock(req.params.id, req.body, req.user._id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Product stock added successfully!',
+      data: result
+    });
+  });
+
+  /**
    * Get all product of user with query
    */
   readAll = asyncHandler(async (req, res) => {
@@ -68,6 +82,33 @@ class ProductControllers {
       statusCode: httpStatus.OK,
       message: 'Product fetched successfully!',
       data: result
+    });
+  });
+
+  /**
+   * update product
+   */
+  update = asyncHandler(async (req, res) => {
+    const result = await this.services.update(req.params.id, req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Product updated successfully!',
+      data: result
+    });
+  });
+
+  /**
+   * delete product
+   */
+  delete = asyncHandler(async (req, res) => {
+    await this.services.delete(req.params.id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Product delete successfully!'
     });
   });
 }
