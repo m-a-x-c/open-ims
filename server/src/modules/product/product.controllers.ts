@@ -111,6 +111,19 @@ class ProductControllers {
       message: 'Product delete successfully!'
     });
   });
+
+  /**
+   * delete multiple product
+   */
+  bulkDelete = asyncHandler(async (req, res) => {
+    await this.services.bulkDelete(req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Delete Selected Product successfully!'
+    });
+  });
 }
 
 const productControllers = new ProductControllers();

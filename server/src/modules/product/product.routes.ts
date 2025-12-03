@@ -9,6 +9,7 @@ const productRoute = Router();
 productRoute.use(verifyAuth);
 
 productRoute.get('/total', productControllers.getTotalProduct);
+productRoute.post('/bulk-delete', productControllers.bulkDelete);
 productRoute.post('/', validateRequest(productValidator.createSchema), productControllers.create);
 productRoute.get('/', productControllers.readAll);
 productRoute.patch('/:id/add', validateRequest(productValidator.addStockSchema), productControllers.addStock);
