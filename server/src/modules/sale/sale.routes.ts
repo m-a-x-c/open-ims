@@ -9,5 +9,6 @@ const saleRoutes = Router();
 saleRoutes.use(verifyAuth);
 
 saleRoutes.post('/', validateRequest(saleValidator.createSchema), saleControllers.create);
+saleRoutes.get('/', saleControllers.readAll);
 
 export default saleRoutes;

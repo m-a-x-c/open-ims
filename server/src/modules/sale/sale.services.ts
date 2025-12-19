@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
+import sortAndPaginatePipeline from '../../lib/sortAndPaginate.pipeline';
 import BaseServices from '../baseServices';
 import Sale from './sale.model';
 import Product from '../product/product.model';
@@ -39,6 +40,44 @@ class SaleServices extends BaseServices<any> {
     } finally {
       await session.endSession();
     }
+  }
+
+  /**
+   *  Get all sale
+   */
+  async readAll(query: Record<string, unknown> = {}, userId: string) {
+    const search = query.search ? (query.search as string) : '';
+
+    const data = await this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId),
+          $or: [{ productName: { $regex: search, $options: 'i' } }, { buyerName: { $regex: search, $options: 'i' } }]
+        }
+      },
+      ...sortAndPaginatePipeline(query)
+    ]);
+
+    const totalCount = await this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId)
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0
+        }
+      }
+    ]);
+
+    return { data, totalCount };
   }
 }
 
