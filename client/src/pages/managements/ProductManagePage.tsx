@@ -16,6 +16,7 @@ import toastMessage from '../../lib/toastMessage';
 import { useGetAllCategoriesQuery } from '../../redux/features/management/categoryApi';
 import { useGetAllSellerQuery } from '../../redux/features/management/sellerApi';
 import { useGetAllBrandsQuery } from '../../redux/features/management/brandApi';
+import { useCreateSaleMutation } from '../../redux/features/management/saleApi';
 import { SpinnerIcon } from '@phosphor-icons/react';
 
 const ProductManagePage = () => {
@@ -40,7 +41,7 @@ const ProductManagePage = () => {
     key: product._id,
     name: product.name,
     category: product.category,
-    categoryName: product.category?.name,
+    categoryName: product.category.name,
     price: product.price,
     stock: product.stock,
     seller: product?.seller,
@@ -91,6 +92,7 @@ const ProductManagePage = () => {
       render: (item) => {
         return (
           <div style={{ display: 'flex' }}>
+            <SellProductModal product={item} />
             <AddStockModal product={item} />
             <UpdateProductModal product={item} />
             <DeleteProductModal id={item.key} />
@@ -125,6 +127,97 @@ const ProductManagePage = () => {
           total={products?.meta?.total}
         />
       </Flex>
+    </>
+  );
+};
+
+/**
+ * Sell Product Modal
+ */
+const SellProductModal = ({ product }: { product: IProduct & { key: string } }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm();
+  const [saleProduct, { isLoading }] = useCreateSaleMutation();
+
+  const onSubmit = async (data: FieldValues) => {
+    const payload = {
+      product: product.key,
+      productName: product.name,
+      productPrice: product.price,
+      quantity: Number(data.quantity),
+      buyerName: data.buyerName,
+      date: data.date,
+    };
+    try {
+      const res = await saleProduct(payload).unwrap();
+      if (res.statusCode === 201) {
+        toastMessage({ icon: 'success', text: res.message });
+        reset();
+        handleCancel();
+      }
+    } catch (error: any) {
+      handleCancel();
+      toastMessage({ icon: 'error', text: error.data.message });
+    }
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  return (
+    <>
+      <Button
+        onClick={showModal}
+        type='primary'
+        className='table-btn'
+        style={{ backgroundColor: 'royalblue' }}
+      >
+        Sell
+      </Button>
+      <Modal title='Sell Product' open={isModalOpen} onCancel={handleCancel} footer={null}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '1rem' }}>
+          <CustomInput
+            name='buyerName'
+            label='Buyer Name'
+            errors={errors}
+            required={true}
+            register={register}
+            type='text'
+          />
+          <CustomInput
+            name='date'
+            label='Selling date'
+            errors={errors}
+            required={true}
+            register={register}
+            type='date'
+          />
+          <CustomInput
+            name='quantity'
+            label='Quantity'
+            errors={errors}
+            required={true}
+            register={register}
+            type='number'
+          />
+          <Flex justify='center' style={{ marginTop: '1rem' }}>
+            <Button htmlType='submit' type='primary' disabled={isLoading}>
+              {isLoading && <SpinnerIcon className='spin' weight='bold' />}
+              Sell Product
+            </Button>
+          </Flex>
+        </form>
+      </Modal>
     </>
   );
 };
@@ -166,7 +259,12 @@ const AddStockModal = ({ product }: { product: IProduct & { key: string } }) => 
 
   return (
     <>
-      <Button onClick={showModal} type='primary' className='table-btn'>
+      <Button
+        onClick={showModal}
+        type='primary'
+        className='table-btn'
+        style={{ backgroundColor: 'blue' }}
+      >
         Add Stock
       </Button>
       <Modal title='Add Product to Stock' open={isModalOpen} onCancel={handleCancel} footer={null}>
@@ -203,7 +301,7 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
       name: product.name,
       price: product.price,
       seller: product?.seller?._id,
-      category: product.category?._id,
+      category: product.category._id,
       brand: product.brand?._id,
       description: product.description,
       size: product.size,
@@ -235,16 +333,36 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
 
   return (
     <>
-      <Button onClick={showModal} type='primary' className='table-btn-small'>
+      <Button
+        onClick={showModal}
+        type='primary'
+        className='table-btn-small'
+        style={{ backgroundColor: 'green' }}
+      >
         <EditFilled />
       </Button>
       <Modal title='Update Product Info' open={isModalOpen} onCancel={handleCancel} footer={null}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CustomInput name='name' errors={errors} label='Name' register={register} required={true} />
-          <CustomInput errors={errors} label='Price' type='number' name='price' register={register} required={true} />
+          <CustomInput
+            name='name'
+            errors={errors}
+            label='Name'
+            register={register}
+            required={true}
+          />
+          <CustomInput
+            errors={errors}
+            label='Price'
+            type='number'
+            name='price'
+            register={register}
+            required={true}
+          />
           <Row>
             <Col xs={{ span: 23 }} lg={{ span: 6 }}>
-              <label htmlFor='Size' className='label'>Seller</label>
+              <label htmlFor='Size' className='label'>
+                Seller
+              </label>
             </Col>
             <Col xs={{ span: 23 }} lg={{ span: 18 }}>
               <select
@@ -254,14 +372,19 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
               >
                 <option value=''>Select Seller*</option>
                 {sellers?.data.map((item: ICategory) => (
-                  <option value={item._id} key={item._id}>{item.name}</option>
+                  <option value={item._id} key={item._id}>
+                    {item.name}
+                  </option>
                 ))}
               </select>
             </Col>
           </Row>
+
           <Row>
             <Col xs={{ span: 23 }} lg={{ span: 6 }}>
-              <label htmlFor='Size' className='label'>Category</label>
+              <label htmlFor='Size' className='label'>
+                Category
+              </label>
             </Col>
             <Col xs={{ span: 23 }} lg={{ span: 18 }}>
               <select
@@ -270,14 +393,19 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
               >
                 <option value=''>Select Category*</option>
                 {categories?.data.map((item: ICategory) => (
-                  <option value={item._id} key={item._id}>{item.name}</option>
+                  <option value={item._id} key={item._id}>
+                    {item.name}
+                  </option>
                 ))}
               </select>
             </Col>
           </Row>
+
           <Row>
             <Col xs={{ span: 23 }} lg={{ span: 6 }}>
-              <label htmlFor='Size' className='label'>Brand</label>
+              <label htmlFor='Size' className='label'>
+                Brand
+              </label>
             </Col>
             <Col xs={{ span: 23 }} lg={{ span: 18 }}>
               <select
@@ -286,15 +414,21 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
               >
                 <option value=''>Select brand</option>
                 {brands?.data.map((item: ICategory) => (
-                  <option value={item._id} key={item._id}>{item.name}</option>
+                  <option value={item._id} key={item._id}>
+                    {item.name}
+                  </option>
                 ))}
               </select>
             </Col>
           </Row>
+
           <CustomInput label='Description' name='description' register={register} />
+
           <Row>
             <Col xs={{ span: 23 }} lg={{ span: 6 }}>
-              <label htmlFor='Size' className='label'>Size</label>
+              <label htmlFor='Size' className='label'>
+                Size
+              </label>
             </Col>
             <Col xs={{ span: 23 }} lg={{ span: 18 }}>
               <select className={`input-field`} {...register('size')}>
@@ -306,7 +440,11 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
             </Col>
           </Row>
           <Flex justify='center'>
-            <Button htmlType='submit' type='primary' style={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
+            <Button
+              htmlType='submit'
+              type='primary'
+              style={{ textTransform: 'uppercase', fontWeight: 'bold' }}
+            >
               Update
             </Button>
           </Flex>
@@ -323,8 +461,13 @@ const DeleteProductModal = ({ id }: { id: string }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteProduct] = useDeleteProductMutation();
 
-  const showModal = () => setIsModalOpen(true);
-  const handleCancel = () => setIsModalOpen(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -341,16 +484,33 @@ const DeleteProductModal = ({ id }: { id: string }) => {
 
   return (
     <>
-      <Button onClick={showModal} type='primary' className='table-btn-small' style={{ backgroundColor: 'red' }}>
+      <Button
+        onClick={showModal}
+        type='primary'
+        className='table-btn-small'
+        style={{ backgroundColor: 'red' }}
+      >
         <DeleteFilled />
       </Button>
       <Modal title='Delete Product' open={isModalOpen} onCancel={handleCancel} footer={null}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <h2>Are you want to delete this product?</h2>
           <h4>You won't be able to revert it.</h4>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
-            <Button onClick={handleCancel} type='default'>Cancel</Button>
-            <Button onClick={() => handleDelete(id)} type='primary' style={{ backgroundColor: 'red' }}>
+          <div
+            style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}
+          >
+            <Button
+              onClick={handleCancel}
+              type='primary'
+              style={{ backgroundColor: 'lightseagreen' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => handleDelete(id)}
+              type='primary'
+              style={{ backgroundColor: 'red' }}
+            >
               Yes! Delete
             </Button>
           </div>

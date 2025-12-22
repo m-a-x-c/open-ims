@@ -4,6 +4,7 @@ import Sidebar from '../components/layout/Sidebar';
 import Dashboard from '../pages/Dashboard';
 import CreateProduct from '../pages/CreateProduct';
 import ProductManagePage from '../pages/managements/ProductManagePage';
+import SaleManagementPage from '../pages/managements/SaleManagementPage';
 import SellerManagementPage from '../pages/managements/SellerManagementPage';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
@@ -41,6 +42,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectRoute>
             <ProductManagePage />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'sales',
+        element: (
+          <ProtectRoute>
+            <SaleManagementPage />
           </ProtectRoute>
         ),
       },
