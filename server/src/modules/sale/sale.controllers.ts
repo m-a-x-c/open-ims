@@ -42,6 +42,57 @@ class SaleControllers {
       data: result.data
     });
   });
+
+  /**
+   * Get single sale of user
+   */
+  readSingle = asyncHandler(async (req, res) => {
+    const result = await this.services.read(req.params.id, req.user._id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'sale fetched successfully!',
+      data: result
+    });
+  });
+
+  /**
+   * update sale
+   */
+  update = asyncHandler(async (req, res) => {
+    const { price, quantity, ...restPayload } = req.body;
+
+    const sale = await this.services.read(req.params.id, req.user._id);
+
+    const updatedPrice = price || sale.product.price;
+    const updatedQuantity = quantity || sale.quantity;
+
+    restPayload.totalPrice = updatedPrice * updatedQuantity;
+    restPayload.quantity = updatedQuantity;
+
+    const result = await this.services.update(req.params.id, restPayload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'sale updated successfully!',
+      data: result
+    });
+  });
+
+  /**
+   * delete sale
+   */
+  delete = asyncHandler(async (req, res) => {
+    await this.services.delete(req.params.id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'sale delete successfully!'
+    });
+  });
 }
 
 const saleControllers = new SaleControllers();

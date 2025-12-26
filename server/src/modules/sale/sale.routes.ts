@@ -10,5 +10,8 @@ saleRoutes.use(verifyAuth);
 
 saleRoutes.post('/', validateRequest(saleValidator.createSchema), saleControllers.create);
 saleRoutes.get('/', saleControllers.readAll);
+saleRoutes.patch('/:id', validateRequest(saleValidator.updateSchema), saleControllers.update);
+saleRoutes.get('/:id', saleControllers.readSingle);
+saleRoutes.delete('/:id', saleControllers.delete);
 
 export default saleRoutes;

@@ -25,10 +25,19 @@ const saleApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['sale']
     }),
+    updateSale: builder.mutation({
+      query: ({ id, payload }) => ({
+        url: `/sales/${id}`,
+        method: 'PATCH',
+        body: payload
+      }),
+      invalidatesTags: ['sale']
+    }),
   })
 })
 
 export const {
   useGetAllSaleQuery,
   useCreateSaleMutation,
-  useDeleteSaleMutation } = saleApi
+  useDeleteSaleMutation,
+  useUpdateSaleMutation } = saleApi

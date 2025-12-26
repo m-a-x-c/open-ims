@@ -79,6 +79,16 @@ class SaleServices extends BaseServices<any> {
 
     return { data, totalCount };
   }
+
+  // get single sale
+  async read(id: string, userId: string) {
+    await this._isExists(id);
+
+    return this.model.findOne({ user: new Types.ObjectId(userId), _id: id }).populate({
+      path: 'product',
+      select: '-createdAt -updatedAt -__v'
+    });
+  }
 }
 
 const saleServices = new SaleServices(Sale, 'modelName');
