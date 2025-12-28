@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-finally */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose, { Types } from 'mongoose';
 import sortAndPaginatePipeline from '../../lib/sortAndPaginate.pipeline';
@@ -46,6 +47,7 @@ class SaleServices extends BaseServices<any> {
    *  Get all sale
    */
   async readAll(query: Record<string, unknown> = {}, userId: string) {
+    // const date = query.date ? query.date : null;
     const search = query.search ? (query.search as string) : '';
 
     const data = await this.model.aggregate([
@@ -78,6 +80,150 @@ class SaleServices extends BaseServices<any> {
     ]);
 
     return { data, totalCount };
+  }
+
+  async readAllWeeks(userId: string) {
+    return await this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId),
+          date: { $exists: true, $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            week: { $isoWeek: '$date' },
+            year: { $isoWeekYear: '$date' }
+          },
+          totalQuantity: { $sum: '$quantity' },
+          totalRevenue: { $sum: '$totalPrice' }
+        }
+      },
+      {
+        $sort: {
+          '_id.year': 1,
+          '_id.week': 1
+        }
+      },
+      {
+        $project: {
+          week: '$_id.week',
+          year: '$_id.year',
+          totalQuantity: 1,
+          totalRevenue: 1,
+          _id: 0
+        }
+      }
+    ]);
+  }
+
+  async readAllYearly(userId: string) {
+    return await this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId),
+          date: { $exists: true, $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$date' }
+          },
+          totalQuantity: { $sum: '$quantity' },
+          totalRevenue: { $sum: '$totalPrice' }
+        }
+      },
+      {
+        $sort: {
+          '_id.year': 1
+        }
+      },
+      {
+        $project: {
+          year: '$_id.year',
+          totalQuantity: 1,
+          totalRevenue: 1,
+          _id: 0
+        }
+      }
+    ]);
+  }
+
+  async readAllDaily(userId: string) {
+    return await this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId),
+          date: { $exists: true, $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfMonth: '$date' },
+            month: { $month: '$date' },
+            year: { $year: '$date' }
+          },
+          totalQuantity: { $sum: '$quantity' },
+          totalRevenue: { $sum: '$totalPrice' }
+        }
+      },
+      {
+        $sort: {
+          '_id.year': 1,
+          '_id.month': 1,
+          '_id.day': 1
+        }
+      },
+      {
+        $project: {
+          day: '$_id.day',
+          month: '$_id.month',
+          year: '$_id.year',
+          totalQuantity: 1,
+          totalRevenue: 1,
+          _id: 0
+        }
+      }
+    ]);
+  }
+
+  async readAllMonths(userId: string) {
+    return await this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId),
+          date: { $exists: true, $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: '$date' },
+            year: { $year: '$date' }
+          },
+          totalQuantity: { $sum: '$quantity' },
+          totalRevenue: { $sum: '$totalPrice' }
+        }
+      },
+      {
+        $sort: {
+          '_id.year': 1,
+          '_id.month': 1
+        }
+      },
+      {
+        $project: {
+          month: '$_id.month',
+          year: '$_id.year',
+          totalQuantity: 1,
+          totalRevenue: 1,
+          _id: 0
+        }
+      }
+    ]);
   }
 
   // get single sale

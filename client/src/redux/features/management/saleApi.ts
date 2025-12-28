@@ -33,6 +33,34 @@ const saleApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['sale']
     }),
+    yearlySale: builder.query({
+      query: () => ({
+        url: `/sales/years`,
+        method: 'GET'
+      }),
+      providesTags: ['sale']
+    }),
+    monthlySale: builder.query({
+      query: () => ({
+        url: `/sales/months`,
+        method: 'GET'
+      }),
+      providesTags: ['sale']
+    }),
+    weeklySale: builder.query({
+      query: () => ({
+        url: `/sales/weeks`,
+        method: 'GET'
+      }),
+      providesTags: ['sale']
+    }),
+    dailySale: builder.query({
+      query: () => ({
+        url: `/sales/days`,
+        method: 'GET'
+      }),
+      providesTags: ['sale']
+    }),
   })
 })
 
@@ -40,4 +68,8 @@ export const {
   useGetAllSaleQuery,
   useCreateSaleMutation,
   useDeleteSaleMutation,
-  useUpdateSaleMutation } = saleApi
+  useUpdateSaleMutation,
+  useYearlySaleQuery,
+  useMonthlySaleQuery,
+  useWeeklySaleQuery,
+  useDailySaleQuery } = saleApi
