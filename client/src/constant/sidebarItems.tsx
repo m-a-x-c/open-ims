@@ -1,4 +1,4 @@
-import { HomeOutlined, PlusOutlined, AppstoreOutlined, LineChartOutlined, TeamOutlined } from '@ant-design/icons';
+import { HomeOutlined, PlusOutlined, AppstoreOutlined, LineChartOutlined, TeamOutlined, ShoppingOutlined } from '@ant-design/icons';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -33,5 +33,10 @@ export const sidebarItems = [
     key: 'Manage Seller',
     label: <NavLink to='/sellers' style={linkStyle}>Sellers</NavLink>,
     icon: React.createElement(TeamOutlined),
+  },
+  {
+    key: 'Manage Purchase',
+    label: <NavLink to='/purchases' style={linkStyle}>Purchases</NavLink>,
+    icon: React.createElement(ShoppingOutlined),
   },
 ];

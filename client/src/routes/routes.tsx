@@ -6,6 +6,7 @@ import CreateProduct from '../pages/CreateProduct';
 import ProductManagePage from '../pages/managements/ProductManagePage';
 import SaleManagementPage from '../pages/managements/SaleManagementPage';
 import SellerManagementPage from '../pages/managements/SellerManagementPage';
+import PurchaseManagementPage from '../pages/managements/PurchaseManagementPage';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 
@@ -58,6 +59,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectRoute>
             <SellerManagementPage />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'purchases',
+        element: (
+          <ProtectRoute>
+            <PurchaseManagementPage />
           </ProtectRoute>
         ),
       },
