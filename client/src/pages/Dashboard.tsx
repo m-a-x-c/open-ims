@@ -1,5 +1,6 @@
 import { useCountProductsQuery } from '../redux/features/management/productApi';
 import { useYearlySaleQuery } from '../redux/features/management/saleApi';
+import DailyChart from '../components/Charts/DailyChart';
 import Loader from '../components/Loader';
 
 const Dashboard = () => {
@@ -37,6 +38,10 @@ const Dashboard = () => {
         <StatCard label='Items sold' value={totalSold.toLocaleString()} />
         <StatCard label='Revenue' value={`$${totalRevenue.toLocaleString()}`} />
       </div>
+
+      <ChartCard title='Daily sales and revenue' subtitle='Last 30 days'>
+        <DailyChart />
+      </ChartCard>
     </div>
   );
 };
@@ -75,6 +80,34 @@ const StatCard = ({ label, value }: { label: string; value: string }) => (
     >
       {value}
     </div>
+  </div>
+);
+
+const ChartCard = ({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) => (
+  <div
+    style={{
+      padding: 20,
+      border: '1px solid var(--border)',
+      borderRadius: 6,
+      background: 'var(--bg)',
+      marginBottom: 16,
+    }}
+  >
+    <div style={{ marginBottom: 16 }}>
+      <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>{title}</h3>
+      {subtitle && (
+        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{subtitle}</div>
+      )}
+    </div>
+    {children}
   </div>
 );
 
