@@ -1,7 +1,8 @@
+import MonthlyChart from '../components/Charts/MonthlyChart';
+import Loader from '../components/Loader';
 import { useCountProductsQuery } from '../redux/features/management/productApi';
 import { useYearlySaleQuery } from '../redux/features/management/saleApi';
 import DailyChart from '../components/Charts/DailyChart';
-import Loader from '../components/Loader';
 
 const Dashboard = () => {
   const { data: products, isLoading } = useCountProductsQuery(undefined);
@@ -41,6 +42,10 @@ const Dashboard = () => {
 
       <ChartCard title='Daily sales and revenue' subtitle='Last 30 days'>
         <DailyChart />
+      </ChartCard>
+
+      <ChartCard title='Monthly revenue' subtitle='Year to date'>
+        <MonthlyChart />
       </ChartCard>
     </div>
   );
