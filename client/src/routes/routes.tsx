@@ -7,6 +7,8 @@ import ProductManagePage from '../pages/managements/ProductManagePage';
 import SaleManagementPage from '../pages/managements/SaleManagementPage';
 import SellerManagementPage from '../pages/managements/SellerManagementPage';
 import PurchaseManagementPage from '../pages/managements/PurchaseManagementPage';
+import ProfilePage from '../pages/ProfilePage';
+import EditProfilePage from '../pages/EditProfilePage';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 
@@ -67,6 +69,22 @@ export const router = createBrowserRouter([
         element: (
           <ProtectRoute>
             <PurchaseManagementPage />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'profile',
+        element: (
+          <ProtectRoute>
+            <ProfilePage />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'edit-profile',
+        element: (
+          <ProtectRoute>
+            <EditProfilePage />
           </ProtectRoute>
         ),
       },
