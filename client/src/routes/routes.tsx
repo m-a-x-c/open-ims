@@ -9,6 +9,7 @@ import SellerManagementPage from '../pages/managements/SellerManagementPage';
 import PurchaseManagementPage from '../pages/managements/PurchaseManagementPage';
 import ProfilePage from '../pages/ProfilePage';
 import EditProfilePage from '../pages/EditProfilePage';
+import ChangePasswordPage from '../pages/ChangePasswordPage';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 
@@ -85,6 +86,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectRoute>
             <EditProfilePage />
+          </ProtectRoute>
+        ),
+      },
+      {
+        path: 'change-password',
+        element: (
+          <ProtectRoute>
+            <ChangePasswordPage />
           </ProtectRoute>
         ),
       },
