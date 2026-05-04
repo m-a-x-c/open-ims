@@ -20,6 +20,8 @@ const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     stack: config.nodeEnv === 'dev' ? err.stack : null
   };
 
+  // console.log(err);
+
   if (err instanceof ZodError) {
     const errors = zodErrorSanitize(err);
 

@@ -16,8 +16,29 @@ const App = () => {
           colorBgContainer: '#ffffff',
           colorBgLayout: '#ffffff',
           borderRadius: 4,
+          boxShadow: 'none',
+          boxShadowSecondary: 'none',
           fontSize: 14,
           controlHeight: 32,
+        },
+        components: {
+          Button: {
+            primaryShadow: 'none',
+            defaultShadow: 'none',
+          },
+          Menu: {
+            itemHoverBg: '#f1f1ef',
+            itemSelectedBg: '#ebebea',
+            itemSelectedColor: '#37352f',
+            itemColor: '#37352f',
+            itemHoverColor: '#37352f',
+            itemHeight: 32,
+            iconSize: 16,
+          },
+          Layout: {
+            siderBg: '#fbfbfa',
+            bodyBg: '#ffffff',
+          },
         },
       }}
     >

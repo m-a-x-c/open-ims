@@ -1,4 +1,12 @@
-import { HomeOutlined, PlusOutlined, AppstoreOutlined, LineChartOutlined, TeamOutlined, ShoppingOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  HomeOutlined,
+  PlusOutlined,
+  AppstoreOutlined,
+  LineChartOutlined,
+  TeamOutlined,
+  ShoppingOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
