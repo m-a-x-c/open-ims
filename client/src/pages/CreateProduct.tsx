@@ -41,6 +41,12 @@ const CreateProduct = () => {
     if (payload.size === '') {
       delete payload.size;
     }
+    if (payload.sku === '') {
+      delete payload.sku;
+    }
+    if (payload.barcode === '') {
+      delete payload.barcode;
+    }
 
     try {
       const res = await createNewProduct(payload).unwrap();
@@ -136,6 +142,28 @@ const CreateProduct = () => {
           </div>
 
           <CustomInput label='Description' name='description' register={register} />
+
+          <div style={fieldRow}>
+            <label htmlFor='sku' className='label'>SKU</label>
+            <input
+              id='sku'
+              type='text'
+              {...register('sku')}
+              placeholder='Auto-generated if left blank'
+              className='input-field'
+            />
+          </div>
+
+          <div style={fieldRow}>
+            <label htmlFor='barcode' className='label'>Barcode</label>
+            <input
+              id='barcode'
+              type='text'
+              {...register('barcode')}
+              placeholder='Optional (e.g. EAN-13)'
+              className='input-field'
+            />
+          </div>
 
           <div style={fieldRow}>
             <label htmlFor='size' className='label'>Size</label>

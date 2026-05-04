@@ -126,6 +126,11 @@ async function main() {
         stock: rand(10, 200),
       };
       if (size) payload.size = size;
+      // ~60% of seeded products get a fake EAN-13 barcode; SKU is auto-generated server-side
+      if (rand(0, 9) < 6) {
+        const ean = `5${String(rand(0, 999999999999)).padStart(12, '0')}`;
+        payload.barcode = ean;
+      }
       const r = await call('POST', '/products', payload, token);
       const created = Array.isArray(r.data) ? r.data[0] : r.data;
       products.push({ ...created, _seller: seller, _brand: brand, _category: cat });

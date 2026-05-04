@@ -15,6 +15,24 @@ class ProductServices extends BaseServices<any> {
   }
 
   /**
+   * Generate a unique SKU for this user. Format: SKU-XXXXXX (6 alphanumeric).
+   * Skips visually ambiguous characters (I, O, 1, 0). Retries on collision.
+   */
+  private async generateSku(userId: string): Promise<string> {
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    for (let attempt = 0; attempt < 8; attempt++) {
+      let suffix = '';
+      for (let i = 0; i < 6; i++) {
+        suffix += alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+      const candidate = `SKU-${suffix}`;
+      const existing = await this.model.findOne({ user: new Types.ObjectId(userId), sku: candidate });
+      if (!existing) return candidate;
+    }
+    throw new CustomError(500, 'Failed to generate a unique SKU after 8 attempts');
+  }
+
+  /**
    * Create new product
    */
   async create(payload: IProduct, userId: string) {
@@ -24,6 +42,12 @@ class ProductServices extends BaseServices<any> {
         delete payload[key];
       }
     });
+
+    if (!payload.sku) {
+      payload.sku = await this.generateSku(userId);
+    } else {
+      payload.sku = payload.sku.toUpperCase();
+    }
 
     payload.user = new Types.ObjectId(userId);
     const session = await mongoose.startSession();
@@ -121,6 +145,29 @@ class ProductServices extends BaseServices<any> {
   async read(id: string, userId: string) {
     await this._isExists(id);
     return this.model.findOne({ user: new Types.ObjectId(userId), _id: id });
+  }
+
+  /**
+   * Find product by SKU or barcode. Used for scan-to-sell flows.
+   */
+  async findByCode(code: string, userId: string) {
+    const trimmed = code.trim();
+    if (!trimmed) {
+      throw new CustomError(400, 'Code is required');
+    }
+    const product = await this.model
+      .findOne({
+        user: new Types.ObjectId(userId),
+        $or: [{ barcode: trimmed }, { sku: trimmed.toUpperCase() }]
+      })
+      .populate('category', '-__v -user')
+      .populate('brand', '-__v -user')
+      .populate('seller', '-__v -user -createdAt -updatedAt');
+
+    if (!product) {
+      throw new CustomError(404, `No product found with code "${trimmed}"`);
+    }
+    return product;
   }
 
   /**

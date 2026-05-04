@@ -10,4 +10,6 @@ export interface IProduct {
   price: number;
   stock: number;
   description: string;
+  sku: string;
+  barcode?: string;
 }

@@ -61,7 +61,7 @@ const ProductManagementFilter = ({ query, setQuery }: ProductManagementFilterPro
           type='text'
           value={query.name}
           className='input-field'
-          placeholder='Product name'
+          placeholder='Name, SKU, or barcode'
           style={{ marginBottom: 0 }}
           onChange={(e) => setQuery((prev) => ({ ...prev, name: e.target.value }))}
         />

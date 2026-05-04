@@ -40,8 +40,10 @@ const ProductManagePage = () => {
   const tableData = products?.data?.map((product: IProduct) => ({
     key: product._id,
     name: product.name,
+    sku: product.sku,
+    barcode: product.barcode,
     category: product.category,
-    categoryName: product.category.name,
+    categoryName: product.category?.name,
     price: product.price,
     stock: product.stock,
     seller: product?.seller,
@@ -52,6 +54,16 @@ const ProductManagePage = () => {
   }));
 
   const columns: TableColumnsType<any> = [
+    {
+      title: 'SKU',
+      key: 'sku',
+      dataIndex: 'sku',
+      render: (sku: string) => (
+        <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 12, color: 'var(--text-muted)' }}>
+          {sku || '—'}
+        </span>
+      ),
+    },
     {
       title: 'Product Name',
       key: 'name',
@@ -299,9 +311,11 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
   } = useForm({
     defaultValues: {
       name: product.name,
+      sku: product.sku,
+      barcode: product.barcode,
       price: product.price,
       seller: product?.seller?._id,
-      category: product.category._id,
+      category: product.category?._id,
       brand: product.brand?._id,
       description: product.description,
       size: product.size,
@@ -349,6 +363,18 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
             label='Name'
             register={register}
             required={true}
+          />
+          <CustomInput
+            name='sku'
+            errors={errors}
+            label='SKU'
+            register={register}
+          />
+          <CustomInput
+            name='barcode'
+            errors={errors}
+            label='Barcode'
+            register={register}
           />
           <CustomInput
             errors={errors}

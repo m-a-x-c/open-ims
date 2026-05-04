@@ -16,7 +16,22 @@ const matchStagePipeline = (query: Record<string, unknown>, userId: string) => {
   const fieldQuery: any = [{ user: new Types.ObjectId(userId) }, { price: { $gte: minPrice, $lte: maxPrice } }];
 
   if (query.name) {
-    fieldQuery.push({ name: { $regex: new RegExp(query.name as string, 'i') } });
+    const term = query.name as string;
+    fieldQuery.push({
+      $or: [
+        { name: { $regex: new RegExp(term, 'i') } },
+        { sku: { $regex: new RegExp(term, 'i') } },
+        { barcode: { $regex: new RegExp(term, 'i') } }
+      ]
+    });
+  }
+
+  if (query.sku) {
+    fieldQuery.push({ sku: { $regex: new RegExp(query.sku as string, 'i') } });
+  }
+
+  if (query.barcode) {
+    fieldQuery.push({ barcode: { $eq: query.barcode as string } });
   }
 
   if (query.category) {

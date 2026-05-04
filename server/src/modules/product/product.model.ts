@@ -11,9 +11,18 @@ const productSchema = new Schema<IProduct>(
     brand: { type: Schema.Types.ObjectId, ref: 'brand' },
     price: { type: Number, required: true },
     stock: { type: Number, required: true },
-    description: { type: String }
+    description: { type: String },
+    sku: { type: String, required: true, uppercase: true, trim: true },
+    barcode: { type: String, trim: true }
   },
   { timestamps: true }
+);
+
+// SKU is unique per workspace (per user). Barcode is unique per workspace when present.
+productSchema.index({ user: 1, sku: 1 }, { unique: true });
+productSchema.index(
+  { user: 1, barcode: 1 },
+  { unique: true, partialFilterExpression: { barcode: { $type: 'string' } } }
 );
 
 const Product = model<IProduct>('product', productSchema);

@@ -86,6 +86,20 @@ class ProductControllers {
   });
 
   /**
+   * Get product by SKU or barcode (used for scan-to-sell flows)
+   */
+  findByCode = asyncHandler(async (req, res) => {
+    const result = await this.services.findByCode(req.params.code, req.user._id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Product fetched successfully!',
+      data: result
+    });
+  });
+
+  /**
    * update product
    */
   update = asyncHandler(async (req, res) => {

@@ -1,6 +1,8 @@
 export type IProduct = {
   _id: string
   name: string
+  sku: string
+  barcode?: string
   description?: string
   category: ICategory
   brand?: IBrand
