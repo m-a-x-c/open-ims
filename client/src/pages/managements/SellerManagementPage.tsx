@@ -16,6 +16,8 @@ const SellerManagementPage = () => {
     page: 1,
     limit: 10,
     search: '',
+    sortBy: '' as string,
+    sortOrder: '' as '' | 'asc' | 'desc',
   });
 
   const { data, isFetching } = useGetAllSellerQuery(query);
@@ -23,6 +25,24 @@ const SellerManagementPage = () => {
   const onChange: PaginationProps['onChange'] = (page, pageSize) => {
     setQuery((prev) => ({ ...prev, page, limit: pageSize ?? prev.limit }));
   };
+
+  const handleTableChange = (_pag: any, _filters: any, sorter: any) => {
+    const s = Array.isArray(sorter) ? sorter[0] : sorter;
+    if (!s || !s.order) {
+      setQuery((prev) => ({ ...prev, sortBy: '', sortOrder: '', page: 1 }));
+      return;
+    }
+    const fieldKey = (s.columnKey || s.field) as string;
+    setQuery((prev) => ({
+      ...prev,
+      sortBy: fieldKey,
+      sortOrder: s.order === 'ascend' ? 'asc' : 'desc',
+      page: 1,
+    }));
+  };
+
+  const sortedColumnOrder = (key: string): 'ascend' | 'descend' | null =>
+    query.sortBy === key ? (query.sortOrder === 'asc' ? 'ascend' : 'descend') : null;
 
   const tableData = data?.data?.map((seller: ISeller) => ({
     key: seller._id,
@@ -36,18 +56,24 @@ const SellerManagementPage = () => {
       title: 'Seller Name',
       key: 'name',
       dataIndex: 'name',
+      sorter: true,
+      sortOrder: sortedColumnOrder('name'),
     },
     {
       title: 'Email',
       key: 'email',
       dataIndex: 'email',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('email'),
     },
     {
       title: 'Contact Number',
       key: 'contactNo',
       dataIndex: 'contactNo',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('contactNo'),
     },
     {
       title: 'Action',
@@ -76,6 +102,7 @@ const SellerManagementPage = () => {
         columns={columns}
         dataSource={tableData}
         pagination={false}
+        onChange={handleTableChange}
       />
       <Flex justify='center' style={{ marginTop: '1rem' }}>
         <Pagination

@@ -15,6 +15,8 @@ const SaleManagementPage = () => {
     page: 1,
     limit: 10,
     search: '',
+    sortBy: '' as string,
+    sortOrder: '' as '' | 'asc' | 'desc',
   });
 
   const { data, isFetching } = useGetAllSaleQuery(query);
@@ -22,6 +24,24 @@ const SaleManagementPage = () => {
   const onChange: PaginationProps['onChange'] = (page, pageSize) => {
     setQuery((prev) => ({ ...prev, page, limit: pageSize ?? prev.limit }));
   };
+
+  const handleTableChange = (_pag: any, _filters: any, sorter: any) => {
+    const s = Array.isArray(sorter) ? sorter[0] : sorter;
+    if (!s || !s.order) {
+      setQuery((prev) => ({ ...prev, sortBy: '', sortOrder: '', page: 1 }));
+      return;
+    }
+    const fieldKey = (s.columnKey || s.field) as string;
+    setQuery((prev) => ({
+      ...prev,
+      sortBy: fieldKey,
+      sortOrder: s.order === 'ascend' ? 'asc' : 'desc',
+      page: 1,
+    }));
+  };
+
+  const sortedColumnOrder = (key: string): 'ascend' | 'descend' | null =>
+    query.sortBy === key ? (query.sortOrder === 'asc' ? 'ascend' : 'descend') : null;
 
   const tableData = data?.data?.map((sale: ITableSale) => ({
     key: sale._id,
@@ -38,36 +58,48 @@ const SaleManagementPage = () => {
       title: 'Product Name',
       key: 'productName',
       dataIndex: 'productName',
+      sorter: true,
+      sortOrder: sortedColumnOrder('productName'),
     },
     {
       title: 'Product Price',
       key: 'productPrice',
       dataIndex: 'productPrice',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('productPrice'),
     },
     {
       title: 'Buyer Name',
       key: 'buyerName',
       dataIndex: 'buyerName',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('buyerName'),
     },
     {
       title: 'Quantity',
       key: 'quantity',
       dataIndex: 'quantity',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('quantity'),
     },
     {
       title: 'Total Price',
       key: 'totalPrice',
       dataIndex: 'totalPrice',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('totalPrice'),
     },
     {
       title: 'Selling Date',
       key: 'date',
       dataIndex: 'date',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('date'),
     },
     {
       title: 'Action',
@@ -105,6 +137,7 @@ const SaleManagementPage = () => {
         columns={columns}
         dataSource={tableData}
         pagination={false}
+        onChange={handleTableChange}
       />
       <Flex justify='center' style={{ marginTop: '1rem' }}>
         <Pagination

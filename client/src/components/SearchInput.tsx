@@ -2,18 +2,12 @@ import { Input } from 'antd';
 import { useEffect, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 
-interface SearchInputProps {
-  setQuery: React.Dispatch<
-    React.SetStateAction<{
-      page: number;
-      limit: number;
-      search: string;
-    }>
-  >;
+interface SearchInputProps<Q extends { search: string }> {
+  setQuery: React.Dispatch<React.SetStateAction<Q>>;
   placeholder?: string;
 }
 
-const SearchInput = ({ setQuery, placeholder = 'Search…' }: SearchInputProps) => {
+function SearchInput<Q extends { search: string }>({ setQuery, placeholder = 'Search…' }: SearchInputProps<Q>) {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -37,6 +31,6 @@ const SearchInput = ({ setQuery, placeholder = 'Search…' }: SearchInputProps) 
       />
     </div>
   );
-};
+}
 
 export default SearchInput;

@@ -18,12 +18,36 @@ const PurchaseManagementPage = () => {
     page: 1,
     limit: 10,
     search: '',
+    sortBy: '' as string,
+    sortOrder: '' as '' | 'asc' | 'desc',
   });
 
   const { data, isFetching } = useGetAllPurchasesQuery(query);
 
   const onChange: PaginationProps['onChange'] = (page, pageSize) => {
     setQuery((prev) => ({ ...prev, page, limit: pageSize ?? prev.limit }));
+  };
+
+  const handleTableChange = (_pag: any, _filters: any, sorter: any) => {
+    const s = Array.isArray(sorter) ? sorter[0] : sorter;
+    if (!s || !s.order) {
+      setQuery((prev) => ({ ...prev, sortBy: '', sortOrder: '', page: 1 }));
+      return;
+    }
+    // Map UI column keys to backend field names where they differ
+    const columnKey = (s.columnKey || s.field) as string;
+    const fieldKey = columnKey === 'price' ? 'unitPrice' : columnKey === 'date' ? 'createdAt' : columnKey;
+    setQuery((prev) => ({
+      ...prev,
+      sortBy: fieldKey,
+      sortOrder: s.order === 'ascend' ? 'asc' : 'desc',
+      page: 1,
+    }));
+  };
+
+  const sortedColumnOrder = (key: string): 'ascend' | 'descend' | null => {
+    const backendKey = key === 'price' ? 'unitPrice' : key === 'date' ? 'createdAt' : key;
+    return query.sortBy === backendKey ? (query.sortOrder === 'asc' ? 'ascend' : 'descend') : null;
   };
 
   const tableData = data?.data?.map((purchase: IPurchase) => ({
@@ -42,29 +66,39 @@ const PurchaseManagementPage = () => {
       title: 'Seller Name',
       key: 'sellerName',
       dataIndex: 'sellerName',
+      sorter: true,
+      sortOrder: sortedColumnOrder('sellerName'),
     },
     {
       title: 'Product Name',
       key: 'productName',
       dataIndex: 'productName',
+      sorter: true,
+      sortOrder: sortedColumnOrder('productName'),
     },
     {
       title: 'Price(per unit)',
       key: 'price',
       dataIndex: 'price',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('price'),
     },
     {
       title: 'Quantity',
       key: 'quantity',
       dataIndex: 'quantity',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('quantity'),
     },
     {
       title: 'Total Price',
       key: 'totalPrice',
       dataIndex: 'totalPrice',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('totalPrice'),
     },
     {
       title: 'Due',
@@ -77,6 +111,8 @@ const PurchaseManagementPage = () => {
       key: 'date',
       dataIndex: 'date',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('date'),
     },
     {
       title: 'Action',
@@ -105,6 +141,7 @@ const PurchaseManagementPage = () => {
         columns={columns}
         dataSource={tableData}
         pagination={false}
+        onChange={handleTableChange}
       />
       <Flex justify='center' style={{ marginTop: '1rem' }}>
         <Pagination

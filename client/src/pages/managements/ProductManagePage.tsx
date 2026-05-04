@@ -27,6 +27,8 @@ const ProductManagePage = () => {
     lowStock: false as boolean,
     page: 1,
     limit: 10,
+    sortBy: '' as string,
+    sortOrder: '' as '' | 'asc' | 'desc',
   });
 
   // Reset to page 1 when filters change
@@ -39,6 +41,24 @@ const ProductManagePage = () => {
   const onChange: PaginationProps['onChange'] = (page, pageSize) => {
     setQuery((prev) => ({ ...prev, page, limit: pageSize ?? prev.limit }));
   };
+
+  const handleTableChange = (_pag: any, _filters: any, sorter: any) => {
+    const s = Array.isArray(sorter) ? sorter[0] : sorter;
+    if (!s || !s.order) {
+      setQuery((prev) => ({ ...prev, sortBy: '', sortOrder: '', page: 1 }));
+      return;
+    }
+    const fieldKey = (s.columnKey || s.field) as string;
+    setQuery((prev) => ({
+      ...prev,
+      sortBy: fieldKey,
+      sortOrder: s.order === 'ascend' ? 'asc' : 'desc',
+      page: 1,
+    }));
+  };
+
+  const sortedColumnOrder = (key: string): 'ascend' | 'descend' | null =>
+    query.sortBy === key ? (query.sortOrder === 'asc' ? 'ascend' : 'descend') : null;
 
   const tableData = products?.data?.map((product: IProduct) => ({
     key: product._id,
@@ -63,6 +83,8 @@ const ProductManagePage = () => {
       title: 'SKU',
       key: 'sku',
       dataIndex: 'sku',
+      sorter: true,
+      sortOrder: sortedColumnOrder('sku'),
       render: (sku: string) => (
         <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 12, color: 'var(--text-muted)' }}>
           {sku || '—'}
@@ -73,6 +95,8 @@ const ProductManagePage = () => {
       title: 'Product Name',
       key: 'name',
       dataIndex: 'name',
+      sorter: true,
+      sortOrder: sortedColumnOrder('name'),
     },
     {
       title: 'Category',
@@ -85,12 +109,16 @@ const ProductManagePage = () => {
       key: 'price',
       dataIndex: 'price',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('price'),
     },
     {
       title: 'stock',
       key: 'stock',
       dataIndex: 'stock',
       align: 'center',
+      sorter: true,
+      sortOrder: sortedColumnOrder('stock'),
       render: (stock: number, row: any) => (
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           {stock}
@@ -151,6 +179,7 @@ const ProductManagePage = () => {
         columns={columns}
         dataSource={tableData}
         pagination={false}
+        onChange={handleTableChange}
       />
       <Flex justify='center' style={{ marginTop: '1rem' }}>
         <Pagination

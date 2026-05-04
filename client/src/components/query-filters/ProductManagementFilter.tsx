@@ -3,18 +3,20 @@ import React from 'react';
 import { useGetAllCategoriesQuery } from '../../redux/features/management/categoryApi';
 import { useGetAllBrandsQuery } from '../../redux/features/management/brandApi';
 
+type ProductQuery = {
+  name: string;
+  category: string;
+  brand: string;
+  lowStock: boolean;
+  page: number;
+  limit: number;
+  sortBy: string;
+  sortOrder: '' | 'asc' | 'desc';
+};
+
 interface ProductManagementFilterProps {
-  query: { name: string; category: string; brand: string; lowStock: boolean; page: number; limit: number };
-  setQuery: React.Dispatch<
-    React.SetStateAction<{
-      name: string;
-      category: string;
-      brand: string;
-      lowStock: boolean;
-      page: number;
-      limit: number;
-    }>
-  >;
+  query: ProductQuery;
+  setQuery: React.Dispatch<React.SetStateAction<ProductQuery>>;
 }
 
 const labelStyle: React.CSSProperties = {

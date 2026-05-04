@@ -24,6 +24,7 @@ class SellerServices extends BaseServices<any> {
   async readAll(query: Record<string, unknown> = {}, userId: string) {
     const search = query.search ? query.search : '';
 
+    const sortable = ['name', 'email', 'contactNo', 'createdAt'];
     const data = await this.model.aggregate([
       {
         $match: {
@@ -35,7 +36,7 @@ class SellerServices extends BaseServices<any> {
           ]
         }
       },
-      ...sortAndPaginatePipeline(query)
+      ...sortAndPaginatePipeline(query, sortable)
     ]);
 
     const totalCount = await this.model.aggregate([

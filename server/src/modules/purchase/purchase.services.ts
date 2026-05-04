@@ -27,6 +27,7 @@ class PurchaseServices extends BaseServices<any> {
   async getAll(userId: string, query: Record<string, unknown>) {
     const search = query.search ? query.search : '';
 
+    const sortable = ['sellerName', 'productName', 'quantity', 'unitPrice', 'totalPrice', 'paid', 'createdAt'];
     const data = await this.model.aggregate([
       {
         $match: {
@@ -34,7 +35,7 @@ class PurchaseServices extends BaseServices<any> {
           $or: [{ sellerName: { $regex: search, $options: 'i' } }, { productName: { $regex: search, $options: 'i' } }]
         }
       },
-      ...sortAndPaginatePipeline(query)
+      ...sortAndPaginatePipeline(query, sortable)
     ]);
 
     const totalCount = await this.model.find({ user: userId }).countDocuments();

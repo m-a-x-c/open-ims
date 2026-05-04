@@ -50,6 +50,7 @@ class SaleServices extends BaseServices<any> {
     // const date = query.date ? query.date : null;
     const search = query.search ? (query.search as string) : '';
 
+    const sortable = ['productName', 'buyerName', 'productPrice', 'quantity', 'totalPrice', 'date', 'createdAt'];
     const data = await this.model.aggregate([
       {
         $match: {
@@ -57,7 +58,7 @@ class SaleServices extends BaseServices<any> {
           $or: [{ productName: { $regex: search, $options: 'i' } }, { buyerName: { $regex: search, $options: 'i' } }]
         }
       },
-      ...sortAndPaginatePipeline(query)
+      ...sortAndPaginatePipeline(query, sortable)
     ]);
 
     const totalCount = await this.model.aggregate([
