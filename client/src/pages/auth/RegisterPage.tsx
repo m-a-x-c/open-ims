@@ -62,14 +62,8 @@ const RegisterPage = () => {
           <img
             src='/favicon.svg'
             alt='logo'
-            style={{ width: 36, height: 36, marginBottom: 16 }}
+            style={{ width: 36, height: 36 }}
           />
-          <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 4 }}>
-            Create your account
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>
-            Start managing your inventory in seconds.
-          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>

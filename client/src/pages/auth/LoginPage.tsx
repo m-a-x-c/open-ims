@@ -26,7 +26,6 @@ const LoginPage = () => {
         const user = decodeToken(res.data.token);
         dispatch(loginUser({ token: res.data.token, user }));
         navigate('/');
-        toastMessage({ icon: 'success', text: 'Welcome back!' });
       }
     } catch (error: any) {
       toastMessage({ icon: 'error', text: error.data.message });
@@ -49,14 +48,8 @@ const LoginPage = () => {
           <img
             src='/favicon.svg'
             alt='logo'
-            style={{ width: 36, height: 36, marginBottom: 16 }}
+            style={{ width: 36, height: 36 }}
           />
-          <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 4 }}>
-            Welcome back
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>
-            Sign in to your inventory workspace.
-          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
