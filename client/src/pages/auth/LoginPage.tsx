@@ -1,5 +1,5 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
-import { Button, Flex } from 'antd';
+import { Button } from 'antd';
 import { FieldValues, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import toastMessage from '../../lib/toastMessage';
@@ -16,12 +16,7 @@ const LoginPage = () => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: 'test-visitor@gmail.com',
-      password: 'pass123',
-    },
-  });
+  } = useForm();
 
   const onSubmit = async (data: FieldValues) => {
     try {
@@ -31,59 +26,112 @@ const LoginPage = () => {
         const user = decodeToken(res.data.token);
         dispatch(loginUser({ token: res.data.token, user }));
         navigate('/');
-        toastMessage({ icon: 'success', text: 'Successfully Login!' });
+        toastMessage({ icon: 'success', text: 'Welcome back!' });
       }
     } catch (error: any) {
       toastMessage({ icon: 'error', text: error.data.message });
     }
   };
 
-  // if (isLoading) <Loader />;
-  // else
   return (
-    <Flex justify='center' align='center' style={{ height: '100vh' }}>
-      <Flex
-        vertical
-        style={{
-          width: '400px',
-          padding: '3rem',
-          border: '1px solid #164863',
-          borderRadius: '.6rem',
-        }}
-      >
-        <h1 style={{ marginBottom: '.7rem', textAlign: 'center', textTransform: 'uppercase' }}>
-          Login
-        </h1>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#ffffff',
+        padding: '24px',
+      }}
+    >
+      <div style={{ width: '100%', maxWidth: 360 }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <img
+            src='/favicon.svg'
+            alt='logo'
+            style={{ width: 36, height: 36, marginBottom: 16 }}
+          />
+          <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 4 }}>
+            Welcome back
+          </h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>
+            Sign in to your inventory workspace.
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            type='text'
-            {...register('email', { required: true })}
-            placeholder='Your Name*'
-            className={`input-field ${errors['email'] ? 'input-field-error' : ''}`}
-          />
-          <input
-            type='password'
-            placeholder='Your Password*'
-            className={`input-field ${errors['password'] ? 'input-field-error' : ''}`}
-            {...register('password', { required: true })}
-          />
-          <Flex justify='center'>
-            <Button
-              htmlType='submit'
-              type='primary'
-              disabled={isLoading}
-              style={{ textTransform: 'uppercase', fontWeight: 'bold', width: '100%' }}
+          <div style={{ marginBottom: 12 }}>
+            <label
+              htmlFor='email'
+              style={{
+                display: 'block',
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--text)',
+                marginBottom: 6,
+              }}
             >
-              {isLoading && <SpinnerIcon className='spin' weight='bold' />}
-              Login
-            </Button>
-          </Flex>
+              Email
+            </label>
+            <input
+              id='email'
+              type='email'
+              autoComplete='email'
+              {...register('email', { required: true })}
+              placeholder='you@example.com'
+              className={`input-field ${errors['email'] ? 'input-field-error' : ''}`}
+            />
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <label
+              htmlFor='password'
+              style={{
+                display: 'block',
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--text)',
+                marginBottom: 6,
+              }}
+            >
+              Password
+            </label>
+            <input
+              id='password'
+              type='password'
+              autoComplete='current-password'
+              placeholder='Enter your password'
+              className={`input-field ${errors['password'] ? 'input-field-error' : ''}`}
+              {...register('password', { required: true })}
+            />
+          </div>
+
+          <Button
+            htmlType='submit'
+            type='primary'
+            disabled={isLoading}
+            style={{ width: '100%', height: 36 }}
+          >
+            {isLoading && <SpinnerIcon className='spin' weight='bold' />}
+            Sign in
+          </Button>
         </form>
-        <p style={{ marginTop: '1rem' }}>
-          Don't have any account? <Link to='/register'>Resister Here</Link>
+
+        <p
+          style={{
+            marginTop: 20,
+            fontSize: 13,
+            color: 'var(--text-muted)',
+            textAlign: 'center',
+          }}
+        >
+          Don't have an account?{' '}
+          <Link to='/register' style={{ color: 'var(--text)', fontWeight: 500 }}>
+            Sign up
+          </Link>
         </p>
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 
