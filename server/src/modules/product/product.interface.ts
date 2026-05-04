@@ -12,4 +12,5 @@ export interface IProduct {
   description: string;
   sku: string;
   barcode?: string;
+  lowStockThreshold?: number;
 }

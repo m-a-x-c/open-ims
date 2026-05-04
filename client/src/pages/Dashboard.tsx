@@ -1,12 +1,16 @@
+import { Link } from 'react-router-dom';
 import MonthlyChart from '../components/Charts/MonthlyChart';
 import Loader from '../components/Loader';
-import { useCountProductsQuery } from '../redux/features/management/productApi';
+import { useCountProductsQuery, useLowStockProductsQuery } from '../redux/features/management/productApi';
 import { useYearlySaleQuery } from '../redux/features/management/saleApi';
 import DailyChart from '../components/Charts/DailyChart';
 
 const Dashboard = () => {
   const { data: products, isLoading } = useCountProductsQuery(undefined);
   const { data: yearlyData, isLoading: isLoading1 } = useYearlySaleQuery(undefined);
+  const { data: lowStockData } = useLowStockProductsQuery(10);
+  const lowStockItems: Array<{ _id: string; name: string; sku: string; stock: number; lowStockThreshold?: number }> =
+    lowStockData?.data ?? [];
 
   if (isLoading && isLoading1) return <Loader />;
 
@@ -39,6 +43,63 @@ const Dashboard = () => {
         <StatCard label='Items sold' value={totalSold.toLocaleString()} />
         <StatCard label='Revenue' value={`$${totalRevenue.toLocaleString()}`} />
       </div>
+
+      {lowStockItems.length > 0 && (
+        <div
+          style={{
+            padding: 20,
+            border: '1px solid #ffccc7',
+            background: '#fff8f7',
+            borderRadius: 6,
+            marginBottom: 16,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 2, color: '#a8071a' }}>
+                Needs restock — {lowStockItems.length}
+              </h3>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                Items at or below their low-stock threshold.
+              </div>
+            </div>
+            <Link to='/products' style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>
+              View all →
+            </Link>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {lowStockItems.slice(0, 5).map((p) => (
+              <div
+                key={p._id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 0',
+                  borderTop: '1px solid #ffe0dc',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span
+                    style={{
+                      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                      fontSize: 11,
+                      color: 'var(--text-muted)',
+                      minWidth: 90,
+                    }}
+                  >
+                    {p.sku}
+                  </span>
+                  <span style={{ fontSize: 14, color: 'var(--text)' }}>{p.name}</span>
+                </div>
+                <div style={{ fontSize: 13, color: '#a8071a', fontWeight: 500 }}>
+                  {p.stock} / {p.lowStockThreshold ?? 10}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <ChartCard title='Daily sales and revenue' subtitle='Last 30 days'>
         <DailyChart />

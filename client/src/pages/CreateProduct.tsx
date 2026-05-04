@@ -47,6 +47,11 @@ const CreateProduct = () => {
     if (payload.barcode === '') {
       delete payload.barcode;
     }
+    if (payload.lowStockThreshold === '' || payload.lowStockThreshold === undefined || payload.lowStockThreshold === null) {
+      delete payload.lowStockThreshold;
+    } else {
+      payload.lowStockThreshold = Number(payload.lowStockThreshold);
+    }
 
     try {
       const res = await createNewProduct(payload).unwrap();
@@ -161,6 +166,18 @@ const CreateProduct = () => {
               type='text'
               {...register('barcode')}
               placeholder='Optional (e.g. EAN-13)'
+              className='input-field'
+            />
+          </div>
+
+          <div style={fieldRow}>
+            <label htmlFor='lowStockThreshold' className='label'>Low stock at</label>
+            <input
+              id='lowStockThreshold'
+              type='number'
+              min={0}
+              {...register('lowStockThreshold')}
+              placeholder='10'
               className='input-field'
             />
           </div>

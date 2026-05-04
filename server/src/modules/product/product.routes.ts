@@ -9,6 +9,8 @@ const productRoute = Router();
 productRoute.use(verifyAuth);
 
 productRoute.get('/total', productControllers.getTotalProduct);
+productRoute.get('/low-stock', productControllers.getLowStock);
+productRoute.get('/low-stock/count', productControllers.countLowStock);
 productRoute.get('/by-code/:code', productControllers.findByCode);
 productRoute.post('/bulk-delete', productControllers.bulkDelete);
 productRoute.post('/', validateRequest(productValidator.createSchema), productControllers.create);

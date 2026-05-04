@@ -22,7 +22,8 @@ const createSchema = z.object({
   price: z.number().min(1, { message: 'Must be grater than 1!' }),
   stock: z.number().min(1, { message: 'Must be grater than 1!' }),
   sku: skuSchema.optional(),
-  barcode: barcodeSchema.optional()
+  barcode: barcodeSchema.optional(),
+  lowStockThreshold: z.number().int().min(0).optional()
 });
 
 const updateSchema = z.object({
@@ -34,7 +35,8 @@ const updateSchema = z.object({
   price: z.number().min(1, { message: 'Must be grater than 1!' }).optional(),
   stock: z.number().min(1, { message: 'Must be grater than 1!' }).optional(),
   sku: skuSchema.optional(),
-  barcode: barcodeSchema.optional()
+  barcode: barcodeSchema.optional(),
+  lowStockThreshold: z.number().int().min(0).optional()
 });
 
 const addStockSchema = z.object({

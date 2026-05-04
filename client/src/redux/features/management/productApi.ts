@@ -18,6 +18,21 @@ const productApi = baseApi.injectEndpoints({
       }),
       providesTags: ['product']
     }),
+    lowStockProducts: builder.query({
+      query: (limit?: number) => ({
+        url: '/products/low-stock',
+        method: 'GET',
+        params: limit ? { limit } : undefined
+      }),
+      providesTags: ['product']
+    }),
+    lowStockCount: builder.query({
+      query: () => ({
+        url: '/products/low-stock/count',
+        method: 'GET'
+      }),
+      providesTags: ['product']
+    }),
     getSingleProduct: builder.query({
       query: (id) => ({
         url: `/products/${id}`,
@@ -70,6 +85,8 @@ const productApi = baseApi.injectEndpoints({
 export const {
   useGetAllProductsQuery,
   useCountProductsQuery,
+  useLowStockProductsQuery,
+  useLowStockCountQuery,
   useCreateNewProductMutation,
   useAddStockMutation,
   useDeleteProductMutation,

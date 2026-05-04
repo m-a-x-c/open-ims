@@ -50,6 +50,13 @@ const matchStagePipeline = (query: Record<string, unknown>, userId: string) => {
     }
   }
 
+  if (query.lowStock === 'true' || query.lowStock === true) {
+    // Match products where stock <= lowStockThreshold (using default 10 when threshold not set)
+    fieldQuery.push({
+      $expr: { $lte: ['$stock', { $ifNull: ['$lowStockThreshold', 10] }] }
+    });
+  }
+
   return [
     {
       $match: {

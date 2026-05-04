@@ -13,7 +13,8 @@ const productSchema = new Schema<IProduct>(
     stock: { type: Number, required: true },
     description: { type: String },
     sku: { type: String, required: true, uppercase: true, trim: true },
-    barcode: { type: String, trim: true }
+    barcode: { type: String, trim: true },
+    lowStockThreshold: { type: Number, default: 10, min: 0 }
   },
   { timestamps: true }
 );

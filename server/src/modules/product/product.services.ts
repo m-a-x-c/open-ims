@@ -148,6 +148,48 @@ class ProductServices extends BaseServices<any> {
   }
 
   /**
+   * Get products at or below their low-stock threshold (default 10 when unset).
+   * Sorted by lowest stock first. Limit defaults to 50, capped at 200.
+   */
+  async getLowStock(userId: string, limit = 50) {
+    return this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId),
+          $expr: { $lte: ['$stock', { $ifNull: ['$lowStockThreshold', 10] }] }
+        }
+      },
+      { $sort: { stock: 1 } },
+      { $limit: Math.max(1, Math.min(200, limit)) },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'category'
+        }
+      },
+      { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } }
+    ]);
+  }
+
+  /**
+   * Count products at or below their low-stock threshold.
+   */
+  async countLowStock(userId: string) {
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(userId),
+          $expr: { $lte: ['$stock', { $ifNull: ['$lowStockThreshold', 10] }] }
+        }
+      },
+      { $count: 'total' }
+    ]);
+    return result[0]?.total || 0;
+  }
+
+  /**
    * Find product by SKU or barcode. Used for scan-to-sell flows.
    */
   async findByCode(code: string, userId: string) {

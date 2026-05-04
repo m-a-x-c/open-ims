@@ -9,6 +9,7 @@ export type IProduct = {
   price: number
   size?: string
   stock: number
+  lowStockThreshold?: number
   seller: ISeller
 }
 

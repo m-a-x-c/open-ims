@@ -24,6 +24,7 @@ const ProductManagePage = () => {
     name: '',
     category: '',
     brand: '',
+    lowStock: false as boolean,
     page: 1,
     limit: 10,
   });
@@ -31,7 +32,7 @@ const ProductManagePage = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setQuery((prev) => ({ ...prev, page: 1 }));
-  }, [query.name, query.category, query.brand]);
+  }, [query.name, query.category, query.brand, query.lowStock]);
 
   const { data: products, isFetching } = useGetAllProductsQuery(query);
 
@@ -48,6 +49,8 @@ const ProductManagePage = () => {
     categoryName: product.category?.name,
     price: product.price,
     stock: product.stock,
+    lowStockThreshold: product.lowStockThreshold ?? 10,
+    isLowStock: product.stock <= (product.lowStockThreshold ?? 10),
     seller: product?.seller,
     sellerName: product?.seller?.name || 'DELETED SELLER',
     brand: product.brand,
@@ -88,6 +91,28 @@ const ProductManagePage = () => {
       key: 'stock',
       dataIndex: 'stock',
       align: 'center',
+      render: (stock: number, row: any) => (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          {stock}
+          {row.isLowStock && (
+            <span
+              title={`Below threshold of ${row.lowStockThreshold}`}
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                color: '#a8071a',
+                background: '#fff1f0',
+                border: '1px solid #ffccc7',
+                padding: '1px 6px',
+                borderRadius: 999,
+                letterSpacing: '0.04em',
+              }}
+            >
+              LOW
+            </span>
+          )}
+        </span>
+      ),
     },
     {
       title: 'Purchase From',
@@ -320,13 +345,21 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
       brand: product.brand?._id,
       description: product.description,
       size: product.size,
+      lowStockThreshold: product.lowStockThreshold,
     },
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onSubmit = async (data: FieldValues) => {
+    const payload: any = { ...data };
+    if (payload.price !== undefined && payload.price !== '') payload.price = Number(payload.price);
+    if (payload.lowStockThreshold === '' || payload.lowStockThreshold === undefined || payload.lowStockThreshold === null) {
+      delete payload.lowStockThreshold;
+    } else {
+      payload.lowStockThreshold = Number(payload.lowStockThreshold);
+    }
     try {
-      const res = await updateProduct({ id: product.key, payload: data }).unwrap();
+      const res = await updateProduct({ id: product.key, payload }).unwrap();
       if (res.statusCode === 200) {
         toastMessage({ icon: 'success', text: res.message });
         reset();
@@ -375,6 +408,13 @@ const UpdateProductModal = ({ product }: { product: IProduct & { key: string } }
             name='barcode'
             errors={errors}
             label='Barcode'
+            register={register}
+          />
+          <CustomInput
+            name='lowStockThreshold'
+            errors={errors}
+            label='Low stock at'
+            type='number'
             register={register}
           />
           <CustomInput

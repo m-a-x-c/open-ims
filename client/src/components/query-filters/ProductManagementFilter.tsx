@@ -4,9 +4,16 @@ import { useGetAllCategoriesQuery } from '../../redux/features/management/catego
 import { useGetAllBrandsQuery } from '../../redux/features/management/brandApi';
 
 interface ProductManagementFilterProps {
-  query: { name: string; category: string; brand: string; page: number; limit: number };
+  query: { name: string; category: string; brand: string; lowStock: boolean; page: number; limit: number };
   setQuery: React.Dispatch<
-    React.SetStateAction<{ name: string; category: string; brand: string; page: number; limit: number }>
+    React.SetStateAction<{
+      name: string;
+      category: string;
+      brand: string;
+      lowStock: boolean;
+      page: number;
+      limit: number;
+    }>
   >;
 }
 
@@ -25,6 +32,30 @@ const ProductManagementFilter = ({ query, setQuery }: ProductManagementFilterPro
   const { data: brands } = useGetAllBrandsQuery(undefined);
 
   return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <button
+          type='button'
+          onClick={() => setQuery((prev) => ({ ...prev, lowStock: !prev.lowStock }))}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '4px 10px',
+            background: query.lowStock ? '#fff1f0' : 'transparent',
+            border: `1px solid ${query.lowStock ? '#ffccc7' : 'var(--border)'}`,
+            borderRadius: 4,
+            color: query.lowStock ? '#a8071a' : 'var(--text-muted)',
+            fontSize: 12,
+            fontWeight: 500,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            transition: 'background 120ms',
+          }}
+        >
+          {query.lowStock ? '✓ ' : ''}Show only low stock
+        </button>
+      </div>
     <div
       style={{
         display: 'grid',
@@ -103,6 +134,7 @@ const ProductManagementFilter = ({ query, setQuery }: ProductManagementFilterPro
         </select>
       </div>
     </div>
+    </>
   );
 };
 

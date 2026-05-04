@@ -24,3 +24,7 @@ Thumbs.db
 
 # Parallel Next.js port (separate codebase)
 next-client/
+
+# Local-only working notes
+TODO.md
+backfill-skus.mjs

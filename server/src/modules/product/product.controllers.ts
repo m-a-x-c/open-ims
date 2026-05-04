@@ -86,6 +86,35 @@ class ProductControllers {
   });
 
   /**
+   * List products at or below their low-stock threshold
+   */
+  getLowStock = asyncHandler(async (req, res) => {
+    const limit = Number(req.query.limit) || 50;
+    const result = await this.services.getLowStock(req.user._id, limit);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Low-stock products retrieved successfully',
+      data: result
+    });
+  });
+
+  /**
+   * Count low-stock products (for sidebar badge etc.)
+   */
+  countLowStock = asyncHandler(async (req, res) => {
+    const total = await this.services.countLowStock(req.user._id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Low-stock count retrieved successfully',
+      data: { total }
+    });
+  });
+
+  /**
    * Get product by SKU or barcode (used for scan-to-sell flows)
    */
   findByCode = asyncHandler(async (req, res) => {
