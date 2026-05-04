@@ -4,9 +4,9 @@ import { useGetAllCategoriesQuery } from '../../redux/features/management/catego
 import { useGetAllBrandsQuery } from '../../redux/features/management/brandApi';
 
 interface ProductManagementFilterProps {
-  query: { name: string; category: string; brand: string; limit: number };
+  query: { name: string; category: string; brand: string; page: number; limit: number };
   setQuery: React.Dispatch<
-    React.SetStateAction<{ name: string; category: string; brand: string; limit: number }>
+    React.SetStateAction<{ name: string; category: string; brand: string; page: number; limit: number }>
   >;
 }
 

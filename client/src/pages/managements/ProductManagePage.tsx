@@ -1,7 +1,7 @@
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Col, Flex, Modal, Pagination, Row, Table, Tag } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import {
   useAddStockMutation,
@@ -20,21 +20,23 @@ import { useCreateSaleMutation } from '../../redux/features/management/saleApi';
 import { SpinnerIcon } from '@phosphor-icons/react';
 
 const ProductManagePage = () => {
-  const [current, setCurrent] = useState(1);
   const [query, setQuery] = useState({
     name: '',
     category: '',
     brand: '',
+    page: 1,
     limit: 10,
   });
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setQuery((prev) => ({ ...prev, page: 1 }));
+  }, [query.name, query.category, query.brand]);
 
   const { data: products, isFetching } = useGetAllProductsQuery(query);
 
   const onChange: PaginationProps['onChange'] = (page, pageSize) => {
-    setCurrent(page);
-    if (pageSize && pageSize !== query.limit) {
-      setQuery((prev) => ({ ...prev, limit: pageSize }));
-    }
+    setQuery((prev) => ({ ...prev, page, limit: pageSize ?? prev.limit }));
   };
 
   const tableData = products?.data?.map((product: IProduct) => ({
@@ -127,13 +129,12 @@ const ProductManagePage = () => {
       />
       <Flex justify='center' style={{ marginTop: '1rem' }}>
         <Pagination
-          current={current}
+          current={query.page}
           pageSize={query.limit}
           onChange={onChange}
-          onShowSizeChange={(_c, size) => {
-            setCurrent(1);
-            setQuery((prev) => ({ ...prev, limit: size }));
-          }}
+          onShowSizeChange={(_c, size) =>
+            setQuery((prev) => ({ ...prev, page: 1, limit: size }))
+          }
           showSizeChanger
           pageSizeOptions={[10, 20, 50, 100]}
           total={products?.meta?.total}
